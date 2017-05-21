@@ -30,6 +30,6 @@
 
 import Foundation
 
-class DayNameFormatter: NSObject {
+final class DayNameFormatter: NSObject {
   
 }

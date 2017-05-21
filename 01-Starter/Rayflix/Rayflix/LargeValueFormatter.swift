@@ -30,6 +30,6 @@
 
 import Foundation
 
-class LargeValueFormatter: NSObject {
+final class LargeValueFormatter: NSObject {
 
 }

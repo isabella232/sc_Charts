@@ -299,41 +299,45 @@ This mechanism can be used to convert a set of numbers between 1 and 7 into days
 
 ## Demo
 
-I've already created an empty Swift class that'll act as my x axis value formatter for the line chart. 
+I've already created an empty Swift class that'll act as my Y axis value formatter for the line chart. 
 
 > Open Value Formatters/LargeValueFormatter.swift
 
-In order to be able to use this class as a value formatter, I'll first import the `Charts` framework so that I can access its protocols.
+In order to be able to use this class as a value formatter, I'll first import the `Charts` framework so that I can access its protocols. (Charts comes along with Foundation so I don't need both, here.)
 
-```
-import Charts
+```swift
+import Charts //instead of Foundation
 ```
 
-And then I'll declare the class conforms to the `IAxisValueFormatter` protocol.
+And then I'll declare that `LargeValueFormatter` conforms to `IAxisValueFormatter`. Additionally, it must derive from NSObject.
 
 ```
 class LargeValueFormatter: NSObject, IAxisValueFormatter
 ```
 
-The `IAxisValueFormatter` protocol declares a single method that receives a value and an optional instance of `AxisBase`, and returns a string. For the purposes of this screencast I'm really only interested in the value.
+That protocol requires a single method that receives a value and an optional instance of `AxisBase`, and returns a string. For the purposes of this screencast I'm really only interested in the value; I'll make that clear by using an underscore for the internal parameter label. 
 
-```
-func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+```swift
+func stringForValue(
+	_ value: Double, 
+	axis _: AxisBase?
+) -> String {
 
 }
 ```
 
-The value that's passed to this method isn't the data value, but rather the value that represents that data on the axis the formatter is attached to. For this axis I simply want to format the numbers so they're prettier and easier to read is such a confined space. And I can use `String` for that.
+The values that are passed to this method aren't from my data; rather, they're the values that display along the axis the formatter is attached to. For this vertical axis, I simply want to format the numbers so they're prettier and easier to read in such a confined space. For that, I initialize a `String` with a scaled value, formatted with truncation at the decimal point.
 
+```swift
+   return String(
+      format: "%.0fk",
+      arguments: [value / 1000]
+    )
 ```
-return String(format: "%.0fk", arguments: [value/1000.0])
-```
 
-Now I tell the y, or left axis of my line chart to use this formatter.
+Now I tell the left Y axis of my line chart to use this formatter.
 
-> The following line is to be added to the top of  `configureLineChart()` in `DashboardViewController`
-
-```
+```swift
 totalStreamersLineChartView.leftAxis.valueFormatter = LargeValueFormatter()
 ```
 
@@ -341,7 +345,11 @@ totalStreamersLineChartView.leftAxis.valueFormatter = LargeValueFormatter()
 
 ## Interlude
 
-The line chart is now looking and working great, so at this point I'm going to shift focus and implement the bar chart. As you'll see I'm able to reuse a lot of what I've already shown through implementing the line chart, and this is testament to the great work done on the API by the developers of `Charts` and `MPAndroidChart`. 
+**Catie**  
+The line chart's looking great!
+
+**Jessy**  
+And in general, working great! So, at this point I'm going to shift focus and implement the bar chart. As you'll see I'm able to reuse a lot of what I've already implemented for the line chart, and this is testament to the great work done on the API by the developers of `Charts` and `MPAndroidChart`.
 
 ## Demo
 
