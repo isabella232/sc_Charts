@@ -28,12 +28,16 @@
  * THE SOFTWARE.
  */
 
-import Foundation
 import Charts
 
-class LargeValueFormatter: NSObject, IAxisValueFormatter {
-
-  func stringForValue(_ value: Double, axis: AxisBase?) -> String {
-    return String(format: "%.0fk", arguments: [value/1000.0])
+final class LargeValueFormatter: NSObject, IAxisValueFormatter {
+  func stringForValue(
+    _ value: Double,
+    axis _: AxisBase?
+  ) -> String {
+    return String(
+      format: "%.0fk",
+      arguments: [value / 1000]
+    )
   }
 }

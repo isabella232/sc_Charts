@@ -28,12 +28,13 @@
  * THE SOFTWARE.
  */
 
-import Foundation
 import Charts
 
-class DayNameFormatter: NSObject, IAxisValueFormatter {
-  
-  func stringForValue(_ value: Double, axis: AxisBase?) -> String {
+final class DayNameFormatter: NSObject, IAxisValueFormatter {
+  func stringForValue(
+    _ value: Double,
+    axis _: AxisBase?
+  ) -> String {
     return Streamer.last7DaysNewStreamers[Int(value)].day
   }
 }

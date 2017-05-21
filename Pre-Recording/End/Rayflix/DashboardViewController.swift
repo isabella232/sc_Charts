@@ -28,88 +28,113 @@
  * THE SOFTWARE.
  */
 
-
-import UIKit
 import Charts
+import UIKit
 
-class DashboardViewController: UIViewController {
+final class DashboardViewController: UIViewController {
+  @IBOutlet weak var totalStreamersLabel: UILabel! {
+    didSet {
+      let formatter = NumberFormatter()
+      formatter.numberStyle = .decimal
+      formatter.maximumFractionDigits = 0
+      totalStreamersLabel.text = formatter.string(
+        from: NSNumber(value: Streamer.totalStreamers)
+      )
+    }
+  }
   
-  @IBOutlet weak var totalStreamersLabel: UILabel!
+  @IBOutlet var totalStreamersLineChartView: LineChartView! {
+    didSet {
+      totalStreamersLineChartView.configureDefaults()
+      totalStreamersLineChartView.xAxis.drawLabelsEnabled = false
+      totalStreamersLineChartView.leftAxis.valueFormatter = LargeValueFormatter()
+      totalStreamersLineChartView.data = {
+        let dataSet = LineChartDataSet(
+          values:
+            Streamer.aggregateTotalStreamers
+            .enumerated()
+            .map{index, total in ChartDataEntry(x: Double(index), y: total)},
+          label: nil
+        )
+        dataSet.colors = [.white]
+        dataSet.drawCirclesEnabled = false
+        dataSet.fillAlpha = 1.0
+        dataSet.drawFilledEnabled = true
+        dataSet.fillColor = .white
+        
+        let data = LineChartData(dataSets: [dataSet])
+        data.setDrawValues(false)
+        return data
+      }()
+    }
+  }
   
-  @IBOutlet weak var totalStreamersLineChartView: LineChartView!
-  @IBOutlet weak var newStreamersBarChartView: BarChartView!
+  @IBOutlet var newStreamersBarChartView: BarChartView! {
+    didSet {
+      newStreamersBarChartView.configureDefaults()
+      newStreamersBarChartView.xAxis.labelPosition = .bottom
+      newStreamersBarChartView.xAxis.labelTextColor = .white
+      newStreamersBarChartView.xAxis.valueFormatter = DayNameFormatter()
+      newStreamersBarChartView.data = {
+        let dataSet = BarChartDataSet(
+          values:
+          Streamer.last7DaysNewStreamers
+            .enumerated()
+            .map{index, newStreamers in BarChartDataEntry(
+              x: Double(index),
+              y: newStreamers.count
+            )},
+          label: nil
+        )
+        dataSet.drawValuesEnabled = false
+        dataSet.colors = [.white]
+        return BarChartData(dataSets: [dataSet])
+      }()
+    }
+  }
   
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
-  
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .decimal
-    formatter.maximumFractionDigits = 0
-    totalStreamersLabel.text = formatter.string(from: NSNumber(value: Streamer.totalStreamers))
-    
-    configureDefaults(forChart: totalStreamersLineChartView)
-    configureLineChart()
-    
-    configureDefaults(forChart: newStreamersBarChartView)
-    configureBarChart()
-  }
-  
-  private func configureDefaults(forChart chart: BarLineChartViewBase) {
-    chart.chartDescription?.enabled = false
-    chart.legend.enabled = false
-    chart.backgroundColor = .clear
-    chart.isUserInteractionEnabled = false
-    
-    chart.xAxis.drawAxisLineEnabled = false
-    chart.xAxis.drawGridLinesEnabled = false
+}
 
-    chart.leftAxis.drawAxisLineEnabled = false
-    chart.leftAxis.drawGridLinesEnabled = false
-    chart.leftAxis.labelTextColor = .white
+//MARK:- BarLineChartViewBase
+private extension BarLineChartViewBase {
+  func configureDefaults() {
+    chartDescription?.enabled = false
+    legend.enabled = false
+    backgroundColor = .clear
+    isUserInteractionEnabled = false
     
-    chart.rightAxis.enabled = false
-  }
-  
-  private func configureLineChart() {
-    totalStreamersLineChartView.xAxis.drawLabelsEnabled = false
-    totalStreamersLineChartView.leftAxis.valueFormatter = LargeValueFormatter()
-    totalStreamersLineChartView.data = totalStreamersData()
-  }
-  
-  private func totalStreamersData() -> LineChartData {
-    let entries = Streamer.aggregateTotalStreamers.enumerated().map { ChartDataEntry(x: Double($0), y: $1) }
-    
-    let dataSet = LineChartDataSet(values: entries, label: nil)
-    dataSet.colors = [.white]
-    dataSet.drawCirclesEnabled = false
-    dataSet.fillAlpha = 1.0
-    dataSet.drawFilledEnabled = true
-    dataSet.fillColor = .white
-    
-    let data = LineChartData(dataSets: [dataSet])
-    data.setDrawValues(false)
-    return data
-  }
-  
-  private func configureBarChart() {
-    newStreamersBarChartView.xAxis.valueFormatter = DayNameFormatter()
-    newStreamersBarChartView.xAxis.labelPosition = .bottom
-    newStreamersBarChartView.xAxis.labelTextColor = .white
-    newStreamersBarChartView.data = newStreamersData()
-  }
-  
-  private func newStreamersData() -> BarChartData {
-    let entries = Streamer.last7DaysNewStreamers.enumerated().map { BarChartDataEntry(x: Double($0), y: $1.count) }
-    
-    let dataSet = BarChartDataSet(values: entries, label: nil)
-    dataSet.drawValuesEnabled = false
-    dataSet.colors = [.white]
-    
-    return BarChartData(dataSets: [dataSet])
+    for axis in [xAxis, leftAxis] {
+      axis.drawAxisLineEnabled = false
+      axis.drawGridLinesEnabled = false
+    }
+    leftAxis.labelTextColor = .white
+    rightAxis.enabled = false
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -61,7 +61,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LIVE STREAMERS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7y-N4-5m8">
-                                                        <rect key="frame" x="34.333333333333343" y="24.666666666666657" width="115" height="17"/>
+                                                        <rect key="frame" x="34.666666666666657" y="25" width="115" height="17"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
@@ -156,9 +156,9 @@
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
-                        <outlet property="newStreamersBarChartView" destination="FVk-5N-teH" id="zgb-5r-4M1"/>
+                        <outlet property="newStreamersBarChartView" destination="FVk-5N-teH" id="t1c-gr-Eiq"/>
                         <outlet property="totalStreamersLabel" destination="LOj-Wk-I9O" id="Mgh-xp-3vk"/>
-                        <outlet property="totalStreamersLineChartView" destination="X2U-xU-vZh" id="B4P-fv-sV3"/>
+                        <outlet property="totalStreamersLineChartView" destination="X2U-xU-vZh" id="0zE-FK-U2U"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
