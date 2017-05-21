@@ -92,7 +92,6 @@ class DashboardViewController: UIViewController {
     
     let data = LineChartData(dataSets: [dataSet])
     data.setDrawValues(false)
-    
     return data
   }
   

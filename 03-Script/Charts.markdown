@@ -141,72 +141,95 @@ Now I can build and run!
 > Build and run, and demonstrate how the chart is now populated with the streaming data
 
 ## Interlude
+> Put chart in middle of on-camera screen
 
-At this point the line chart is accuratley rendering the Rayflix streamers data, but its appearance leaves much to be desired—the mundane coloring, the cramped numbers, and what's with all those grid lines? 
+**Catie**  
+At this point the line chart is accurately rendering the Rayflix streamers data, but its appearance leaves much to be desired—the mundane coloring, the cramped numbers, and what's with all those grid lines? 
 
-I'm not sure whether or not this is a hangover from the frameworks roots in Android, but the developers have decided to enable _every_ visual feature by default. Luckily they've also made all those features configurable. 
+**Jessy**  
+I'm not sure whether or not this is a holdover from the framework's roots in Android, but the developers have decided to enable _every_ visual feature by default. Luckily they've also made all those features configurable. 
 
 ## Demo
 
 > Open DashboardViewController.swift
 
-There are certain features that I want to disable for both charts, so rather than do them individually and introduce repition I'll add a method that receives an instance of `BarLineChartViewBase`—the parent class of both the line and bar chart—and disables the features on that.
+There are certain features that I want to disable for both charts, so to avoid repetition I'll do that in a fileprivate extension method on `BarLineChartViewBase`—the parent class of both the line and bar chart.
 
-```
-private func configureDefaults(forChart chart: BarLineChartViewBase) {
-  
+```swift
+//MARK:- BarLineChartViewBase
+private extension BarLineChartViewBase {
+  func configureDefaults() {
+  }
 }
 ```
 
-I'll begin by disabling some top level objects such as the description and legend, as well as setting the charts background color and whether or not it's interactive.
+I'll begin by disabling some top level objects such as the description and legend, as well as setting the chart's background color and whether or not it's interactive.
 
-```
-chart.chartDescription?.enabled = false
-chart.legend.enabled = false
-chart.backgroundColor = .clear
-chart.isUserInteractionEnabled = false
+```swift
+chartDescription?.enabled = false
+legend.enabled = false
+backgroundColor = .clear
+isUserInteractionEnabled = false
 ```
 
-Next I want to disable some of the superfluous grid lines the chart renders by default, so it more closely aligns with the overall aethetics of the Rayflix app. First the x axis.
+Next I want to disable some of the superfluous grid lines the chart renders by default, so it will more closely align with the overall aesthetics of the Rayflix app. I'll apply the same changes to the horizontal "`xAxis`", and the vertical "`leftAxis`"…
 
 ```  
-chart.xAxis.drawAxisLineEnabled = false
-chart.xAxis.drawGridLinesEnabled = false
+    for axis in [xAxis, leftAxis] {
+      axis.drawAxisLineEnabled = false
+      axis.drawGridLinesEnabled = false
+    }
 ```
 
-And then the y, or left axis. I'll also set the text color for the labels on the left axis to white, so they're more legible.
+…whose labelTextColor I'll set to white, for better legibility.
 
 ```
-chart.leftAxis.drawAxisLineEnabled = false
-chart.leftAxis.drawGridLinesEnabled = false
-chart.leftAxis.labelTextColor = .white
+leftAxis.labelTextColor = .white
 ```
 
-As I don't want either chart to display a second y axis on the right I'll disable that too.
+And as I don't want either chart to display a second Y axis on the right, I'll just disable that one.
 
 ```  
-chart.rightAxis.enabled = false
+rightAxis.enabled = false
 ```
 
-Now I'll add a call to `configureDefaults(forChart:)` to the bottom of `viewDidLoad()`, just above the call to `configureLineChart()`, passing `totalStreamersLineChartView` as the chart to configure.
+**Catie**  
+And now you add a call to this `configureDefaults` method in the didSet observer for `totalStreamersLineChartView`. 
 
+**Jessy**  
+Right!
+
+```swift
+    didSet {
+      totalStreamersLineChartView.configureDefaults()
+      totalStreamersLineChartView.data = {
 ```
-configureDefaults(forChart: totalStreamersLineChartView)
+
+Also, unlike the bar chart I'll be setting up next, I want to disable the line chart x axis labels. I'll do that here too.
+
+```swift
+totalStreamersLineChartView.configureDefaults()
+      totalStreamersLineChartView.xAxis.drawLabelsEnabled = false
+      totalStreamersLineChartView.data = {
 ```
 
-As I don't want to display the x axis labels on the line chart, I also need to disable them. But since this requirement is unique to the line chart I'll do it within `configureLineChart()` instead.
+## Interlude
 
-```
-totalStreamersLineChartView.xAxis.drawLabelsEnabled = false
-```
+> show onscreen again
 
-I also want to configure how the data itself is rendered. The chart would look far better if those ghastly circles were removed, if it were a solid block of color, and if the chart values were hidden. As you've already seen the `Charts` framework is highly configurable, so after a quick read through the documentation I was able to find the necessary methods and properties to acheive exactly the look I'm going for.
+**Catie**  
+The chart would look far better if those ghastly circles were removed, a solid color was drawn under the curve, and if the chart values were hidden. How can you configure how the data itself is rendered?
 
-It turns out that you use `LineChartDataSet` to configure the appearance of the data, which in hindsight makes perfect sense. As I created my instance of `LineChartDataSet` in `totalStreamerData()` I'll add my configuration there as well.
+**Jessy**  
+As you've already seen the `Charts` framework is highly configurable, so after a quick read through the documentation I was able to find the necessary methods and properties to achieve exactly the look you're talking about!
 
-> The following lines are to be added to `totalStreamerData()`, just below where `dataSet` is initialized
+It turns out that you use `LineChartDataSet` to configure the appearance of the data, which in hindsight makes perfect sense. 
 
-To set the color of the line I pass an array colors to the data set.
+## Demo
+
+Now I'll add the configuration to the `LineChartDataSet` I created.
+
+To set the color of the line I use a `UIColor` array.
 
 ```
 dataSet.colors = [.white]
@@ -220,7 +243,7 @@ Disabling those ghastly circles is easy enough.
 dataSet.drawCirclesEnabled = false
 ```
 
-In order to have the chart draw as a solid block instead of just a thin line, I need to tell the data set that it should fill its drawn area, and provide a fill color and an alpha value for the fill.
+In order to render the chart with a fill, instead of as a thin line, I need to tell the data set that to draw that fill, and provide a color and an alpha value for it.
 
 ```
 dataSet.drawFilledEnabled = true
@@ -228,25 +251,42 @@ dataSet.fillColor = .white
 dataSet.fillAlpha = 1.0
 ```
 
-The option to display the data values is on `LineChartData`, not `LineChartDataSet`.
+Lastly, the option to display the data values is on `LineChartData`, not `LineChartDataSet`.
 
-> The following lines are to be added to `totalStreamerData()`, just below where `data` is initialized
-
-```
+```swift
+let data = LineChartData(dataSets: [dataSet])
 data.setDrawValues(false)
+return data
 ```
-
-Hang on, that looks suspiciously like a Java setter method!? As I mentioned earlier the `Charts` framework is actually a port of the popular Android charting library `MPAndroidChart`, and you will occosionally come across a stray Java-like method such as this one. But rest assured that the developers are working hard to make the entire framework as Swift-y as possible whilst still maintaining its roots.
-
-> Build and run. Call out how the chart looks much better, but something needs to be done about the formatting of the y axis values
 
 ## Interlude
 
+**Catie**  
+Hang on, that doesn't look like Swift.
+
+**Jessy**   
+But perhaps suspiciously …like a Java setter method!? As I mentioned earlier the `Charts` framework is actually a port of the popular Android charting library `MPAndroidChart`, and you will occasionally come across a stray Java-like method such as this one. But rest assured that the developers are working hard to make the entire framework as Swift-y as possible while still maintaining its roots.
+
+Here's what happens if I build and run now!
+
+> show that in the middle of the screen
+
+**Catie**  
+The looks much better! But something needs to be done about the formatting of the y axis values.
+
+**Jessy**  
 When a chart is rendered, the `Charts` framework will attempt to determine what values are shown on each visible axis based on the data it's plotting. However, these values will always be numeric because you can only provide instances of `Double` as the `x` and `y` values.
 
-To workaround this limitation, `Charts` provides the concept of an axis value formatter, by way of the `IAxisValueFormatter` protocol. When a chart is about to be rendered it will call through to any provided axis value formatters, passing the numeric value, and rendering the returned string in its place.
+To workaround this limitation, `Charts` provides the concept of an axis value formatter, by way of the `IAxisValueFormatter` protocol. 
 
-This mechanism can be used to convert a set of numbers between 1-7 into days of the week, for example.
+**Catie**  
+"I" as a prefix for interface? Again, not very Swifty!
+> shakes head
+
+**Jessy**  
+But it gets the job done! When a chart is about to be rendered it will call through to any provided axis value formatters, passing the numeric value, and rendering the returned string in its place.
+
+This mechanism can be used to convert a set of numbers between 1 and 7 into days of the week, for example.
 
 ## Demo
 

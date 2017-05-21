@@ -32,7 +32,6 @@
 import UIKit
 
 class DashboardViewController: UIViewController {
-  
   @IBOutlet var totalStreamersLabel: UILabel! {
     didSet {
       let formatter = NumberFormatter()
@@ -46,11 +45,6 @@ class DashboardViewController: UIViewController {
   
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
-  }
-  
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    
   }
 }
 
