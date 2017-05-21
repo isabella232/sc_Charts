@@ -2,9 +2,9 @@
 
 Hey, what's up everybody, this is [Jessy|Catie]. In today's screencast I'm going to introduce you to a really popular charting framework aptly named `Charts`.
 
-As the name might imply, `Charts` is an open sourse charting framework, written in Swift by Daniel Cohen Gindi. It's heavily inspired by the `MPAndroidCharts` library for Android, and as such shares an almost indentical API. This is great if you're working cross-platform, since the learning curve is reduced and productivity increased.
+As the name might imply, `Charts` is an open source charting framework, written in Swift by Daniel Cohen Gindi. It's heavily inspired by the `MPAndroidCharts` library for Android, and as such shares an almost identical API. This is great if you're working cross-platform, since the learning curve is reduced and productivity increased.
 
-The framework provides 8 different chart types out-of-the-box, has full support for pinching and panning, is highly configurable, and even provides build-up animations for both axis'. 
+The framework provides 8 different chart types out-of-the-box, has full support for pinching and panning, is highly configurable, and even provides build-up animations for both axes. 
 
 But the easiest—and most enjoyable!—way to understand `Charts` is to begin using it, so let’s dive in.
 
@@ -12,15 +12,16 @@ But the easiest—and most enjoyable!—way to understand `Charts` is to begin u
 
 > Open Podfile
 
+**Jessy**  
 I've gone ahead and installed `Charts` using Cocoapods, and will therefore be working in the Xcode workspace rather than the project.
 
 > Open Rayflix.xcworkspace, and then open Main.storyboard
 
-As you can see I've already got my view controller laid out, including two views, one for each of the charts I'll add. I'm going to render a line chart in the upper view, and a bar chart in the lower view—these are two of the most widely used chart types, so hopefully you'll be familiar with them.
+As you can see I've already got my view controller laid out, including two views, one for each of the charts I'll add. I'm going to render a line chart in the upper view, and a bar chart in the lower view.
 
-The first thing I need to do is set the custom class for the upper view. To do that, I select the **Total Streamers Chart** from the scene explorer, and then in the **Identity Inspector** set **Class** to `LineChartView`.
+The first thing I need to do is set the custom class for the upper view. To do that, I select the **Total Streamers Chart** from the Document Outline, and then in the **Identity Inspector** set **Class** to `LineChartView` from the **Charts** module.
 
-Next, I need to hook this view upto an outlet in the view controller.
+Next, I need to hook this view up to an outlet in the view controller.
 
 > Open DashboardViewController.swift
 
@@ -30,7 +31,7 @@ I'll start by importing the `Charts` framework so that I have access to its clas
 import Charts
 ```
 
-And then I declare an outlet for the view I just configured in the storyboard. The type needs to be the same as what I set in the **Identity Inspector**, which is `LineChartView`.
+And then I declare an outlet for the view I just configured in the storyboard. The type needs to be the same as what I set in the **Identity Inspector**, which, again, is `LineChartView`.
 
 ```
 @IBOutlet weak var totalStreamersLineChartView: LineChartView!
@@ -40,68 +41,102 @@ Finally, I just need to connect the outlet to the view in the storyboard:
 
 > Open Main.storyboard, and drag from the outlet to `LineChartView` to connect them. Then build and run.
 
-If all went well I should see the line chart is now working as it displays the default "no data" message. But since a chart without data is like a donut without sugar I'll fix that next. :]
+All has gone well, so I see the line chart is working. It's displaying the default "no chart data available" message. 
+
+**Catie**  
+A chart without data is like a donut without sugar. You should fix that!
 
 ## Interlude
 
+**Jessy**  
 In order to work effectively with the `Charts` framework, you need to understand the class heirarchy and how all the pieces fit together. The developers have done a really good job of pulling out the fundamental pieces of a chart into their own classes, but this can make it a touch overwhelming when first using the framework.
 
-I won't go too deep into this in this screencast as the documentation provides really good coverage, but the main thing to remember is that a chart requires data, data is made up from one or more data sets, and a data set is a collection of data entries, which in turn represent the x and y values of a plot on a chart. 
+**Catie**
+How's the documentation?
 
-Simple, right? :]
+**Jessy**    
+It provides really good coverage, I won't go too deep into in this screencast. The main things to remember are that a chart requires data, data is made up from one or more data sets, and a data set is a collection of data entries, which in turn represent the x and y values of a plot on a chart. 
+
+**Catie**  
+Sounds simple enough!
 
 ## Demo
 
 > Open DashboardViewController.swift
 
-I'm going to add a method to the view controller that'll encapsulate the entire process of creating the data entries, the data set, and finally the data itself, and then returning it to the chart.
+To keep things tidy, I'm going to configure `totalStreamersLineChartView` in its `didSet` observer, which is called when it's assigned the value you connected in Interface Builder. I'll use a closure to assign its data property. To start off with, I'll return nil, to avoid having errors as I put the data together.
 
+```swift
+  @IBOutlet var totalStreamersLineChartView: LineChartView! {
+    😺didSet {
+      totalStreamersLineChartView.data = {
+        return nil
+      }()
+    }🏁
+  }
 ```
-private func totalStreamersData() -> LineChartData {
-  
-}
-```
+This closure is about to encapsulate the entire process of creating the data entries, the data set, and finally the data itself.
 
-Each chart type has its own data class, which is why I used `LineChartData` in this instance. 
+To create the data entries I'll use a static property on the `Streamer` model type that returns an array of the total number of streamers per day for the past two weeks. 
 
-To create the data entries I'll use a static property on the `Streamer` model class that returns an array of the total number of streamers per day for the past two weeks. I'll enumerate this array using `enumerated` as I need both the value and the index of the enumeration, and then I'll pipe them into `map` so I can create instances of `ChartDataEntry`, passing the index as the `x` value, and the streamer count as the `y` value.
-
-```
-let entries = Streamer.aggregateTotalStreamers.enumerated().map { ChartDataEntry(x: Double($0), y: $1) }
-```
-
-Now I have the data entries, I can create a data set from them. I'm passing `nil` as the label as the chart won't be displaying a legend so it's not needed.
-
-```  
-let dataSet = LineChartDataSet(values: entries, label: nil)
+```swift
+	Streamer.aggregateTotalStreamers
 ```
 
-Next I'll create an instance of `LineChartData` using this dataset. Note how the initializer expects an array—this is because a chart can display multiple data sets at once. In this case I'm just passing a single-element array. I'll then return the data from the method. 
+I'll use the `enumerated` method, as I need both the indices _and_ values of that array, as I pipe them into `map`, creating instances of `ChartDataEntry`. The indices are the `x` values, but they needed to be converted to `Double`s first. The streamer counts are already `Double`s so they can be used as the `y` values directly.
+
+```swift
+        let entries =
+          Streamer.aggregateTotalStreamers
+          .enumerated()
+          .map{index, total in ChartDataEntry(x: Double(index), y: total)}
+        
+        return nil
+```
+
+**Catie**  
+Now you have the data *entries*. You said that you need to put them into data *sets*.
+
+**Jessy**  
+Exactly. I can initialize a `LineChartDataSet` using these entries, and `nil` for the label argument. The chart won't be displaying a legend so a label's not needed.
+
+```swift
+        let dataSet = LineChartDataSet(
+          values:
+            Streamer.aggregateTotalStreamers
+            .enumerated()
+            .map{index, total in ChartDataEntry(x: Double(index), y: total)},
+          label: nil
+        )
+
+```
+
+**Catie**  
+And then, can you use that data set to initialize the `ChartData` that you need?
+
+**Jessy**  
+Basically. I can create an instance of `LineChartData` using this dataset (and return that, now that we've got something better than the nil placeholder). 
+
+```swift
+let data = LineChartData(dataSets: [dataSet])
+return data
+```
+
+But, note how the initializer necessitates an array. That's because a chart can display multiple data sets at once. In this case I'm just passing a single-element array. 
 
 ```
 let data = LineChartData(dataSets: [dataSet])
 return data
 ```
 
-With the data set up, I'll now add a second method responsible for configuring the line chart.
+<!--With the data set up, I'll now add a second method responsible for configuring the line chart.
 
 ```
 private func configureLineChart() {
   
 }
-```
-
-And for the time being I'll just ask it to set the data on the line chart using `totalStreamersData()`.
-
-```
-totalStreamersLineChartView.data = totalStreamersData()
-```
-
-Finally I'll call `configureLineChart()` from the bottom of `viewDidLoad()`.
-
-```
-configureLineChart()
-```
+```-->
+Now I can build and run!
 
 > Build and run, and demonstrate how the chart is now populated with the streaming data
 

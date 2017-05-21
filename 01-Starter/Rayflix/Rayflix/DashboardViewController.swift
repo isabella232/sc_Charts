@@ -33,7 +33,16 @@ import UIKit
 
 class DashboardViewController: UIViewController {
   
-  @IBOutlet weak var totalStreamersLabel: UILabel!
+  @IBOutlet var totalStreamersLabel: UILabel! {
+    didSet {
+      let formatter = NumberFormatter()
+      formatter.numberStyle = .decimal
+      formatter.maximumFractionDigits = 0
+      totalStreamersLabel.text = formatter.string(
+        from: NSNumber(value: Streamer.totalStreamers)
+      )
+    }
+  }
   
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
@@ -42,12 +51,6 @@ class DashboardViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .decimal
-    formatter.maximumFractionDigits = 0
-    totalStreamersLabel.text = formatter.string(
-      from: NSNumber(value: Streamer.totalStreamers)
-    )
   }
 }
 
