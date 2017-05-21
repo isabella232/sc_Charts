@@ -31,7 +31,7 @@
 
 import UIKit
 
-class DashboardViewController: UIViewController {
+final class DashboardViewController: UIViewController {
   @IBOutlet var totalStreamersLabel: UILabel! {
     didSet {
       let formatter = NumberFormatter()

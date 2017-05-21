@@ -112,7 +112,7 @@
                                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FVk-5N-teH" userLabel="New Streamers Chart">
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FVk-5N-teH" userLabel="New Streamers Chart" customClass="BarChartView" customModule="Charts">
                                                         <rect key="frame" x="8" y="25" width="398" height="200"/>
                                                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                         <constraints>
@@ -156,6 +156,7 @@
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
+                        <outlet property="newStreamersBarChartView" destination="FVk-5N-teH" id="t1c-gr-Eiq"/>
                         <outlet property="totalStreamersLabel" destination="LOj-Wk-I9O" id="Mgh-xp-3vk"/>
                         <outlet property="totalStreamersLineChartView" destination="X2U-xU-vZh" id="0zE-FK-U2U"/>
                     </connections>

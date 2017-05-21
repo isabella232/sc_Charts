@@ -349,7 +349,7 @@ totalStreamersLineChartView.leftAxis.valueFormatter = LargeValueFormatter()
 The line chart's looking great!
 
 **Jessy**  
-And in general, working great! So, at this point I'm going to shift focus and implement the bar chart. As you'll see I'm able to reuse a lot of what I've already implemented for the line chart, and this is testament to the great work done on the API by the developers of `Charts` and `MPAndroidChart`.
+And in general, working great! So, at this point I'm going to shift focus and implement the bar chart. As you'll see, I'm able to reuse a lot of what I've already implemented for the line chart, a testament to the great work done on the API by the developers of `Charts` and `MPAndroidChart`.
 
 ## Demo
 
@@ -358,123 +358,124 @@ Before I jump into the storyboard I'll first declare the outlet, this time of ty
 > Open DashboardViewController.swift, and add the following below the existing outlets
 
 ```
-@IBOutlet weak var newStreamersBarChartView: BarChartView!
+@IBOutlet var newStreamersBarChartView: BarChartView!
 ```
 
 > Open Main.storyboard
 
-I need to set the the custom class first so I select the **New Streamers Chart** from the scene explorer, and then in the **Identity Inspector** set Class to `BarChartView`.
+I need to set the the custom class first so I select the **New Streamers Chart**, and then in the **Identity Inspector** set Class to `BarChartView`.
 
-And now I can connect the outlet.
+After that, I can connect the outlet.
 
 > Drag from the outlet to BarChartView to connect them, then re-open DashboardViewController.swift
 
-I'll follow the same routine as I did with the line chart, beginning with adding a method to return the bar charts data.
+I'll follow the same routine as I did with the line chart, beginning by configuring `newStreamersBarChartView`'s defaults, and assigning its data with a `nil` placeholder, in its `didSet` observer.
 
-```
-private func newStreamersData() -> BarChartData {
-    
-}
-```
-
-This time the return type is `BarChartData`. As I mentioned previously each chart has its own set of data classes, but they all do descend from the same parent classes.
-
-I want the bar chart to display the daily number of new streamers of the Rayflix service for the past seven days, so once again I use a static property in `Streamer` to grab that. Unlike `aggregateTotalStreamers`, this property returns an array of tuples with named parameters `day` and `count`. When I create instances of `BarChartDataEntry` I neeed to make sure to pass the `count` value of the tuple as the `y` value of the entry.
-
-```
-let entries = Streamer.last7DaysNewStreamers.enumerated().map { BarChartDataEntry(x: Double($0), y: $1.count) }
+```swift
+  @IBOutlet var newStreamersBarChartView: BarChartView! {
+    didSet {
+      newStreamersBarChartView.configureDefaults()
+      newStreamersBarChartView.data = {
+        return nil
+      }()
+    }
+  }   
 ```
 
-With the data entries created, I can now create the data set. Just as with the line chart I want the values hidden and the color of the bars to be white, so both charts share the same design language.
+I want the bar chart to display the daily number of new streamers of the Rayflix service for the past seven days, so once again I use a static property in `Streamer` to grab that. Unlike `aggregateTotalStreamers`, this property returns an array of tuples with named parameters `day` and `count`. When I create instances of `BarChartDataEntry` I need to make sure to pass the `count` value of the tuple as the `y` value of the entry.
+
+```swift
+      Streamer.last7DaysNewStreamers
+      .enumerated()
+      .map{index, newStreamers in BarChartDataEntry(
+        x: Double(index),
+        y: newStreamers.count
+      )}
 
 ```
+
+With the data entries created, I can now create the data set. 
+
+```swift
+       let dataSet = BarChartDataSet(
+          values:
+          Streamer.last7DaysNewStreamers
+            .enumerated()
+            .map{index, newStreamers in BarChartDataEntry(
+              x: Double(index),
+              y: newStreamers.count
+            )},
+          label: nil
+        )
+```
+
+Just as with the line chart I want the values hidden and the color of the bars to be white. Both charts will share the same design language.
+
+```swift
 let dataSet = BarChartDataSet(values: entries, label: nil)
 dataSet.drawValuesEnabled = false
 dataSet.colors = [.white]
 ```
 
-Now I need to return an instance of `BarChartData`, and do so directly rather than using a variable because I don't need to set any properties in the data like I did earlier.
+Now I need to return an instance of `BarChartData`, and I do so directly rather than using a variable because I don't need to set any properties in the data like I did for the `LineChartData`.
 
-```
+```swift
 return BarChartData(dataSets: [dataSet])
 ```
+Now I'll configure two more properties specific to the bar chart—I want the x axis to appear under the graph rather than above it, and I want the labels on that axis to be white so they're legible against the green background.
 
-> Still working in DashboardViewController.swift
-
-I’ll now add a method whose responsibility will be to configure the bar chart.
-
-```
-private func configureBarChart() {
-
-}
-```
-
-And from within it I'll set the data property on `newStreamersBarChartView` using `newStreamersData()` that I just added.
-
-```
-newStreamersBarChartView.data = newStreamersData()
-```
-
-I call this from the bottom of `viewDidLoad` to make sure the chart get configured correctly prior to being displayed.
-
-> Add to the bottom of `viewDidLoad`
-
-```
-configureBarChart()
-```
-
-Just above that, I'll add a call to `configureDefaults(forChart:)` and pass the bar chart view to make sure those defaults inherited from `BarLineChartViewBase` get set and the two charts appear consistent. 
-
-```
-configureDefaults(forChart: newStreamersBarChartView)
-```
-
-I'll jump back to `configureBarChart()` so I can configure two properties specific to the bar chart—I want the x axis to appear under the graph rather than above it, and I want the labels on that axis to be white so they're legible against the green background.
-
-> Add to the top of `configureBarChart()`
-
-```
+```swift
 newStreamersBarChartView.xAxis.labelPosition = .bottom
 newStreamersBarChartView.xAxis.labelTextColor = .white
 ```
 
-This once again demonstrates just how configurable `Charts` is—how cool is it that you can choose the position of the axis labels!? 
+## Interlude
 
-If I were to build and run now, the bar chart would look great, but with one small exception—the `x` value I passed when creating instances of `BarChartDataEntry` is the index of the enumeration, so in this case a value between `0` and `6`. What I actually want to display as the values on the x axis is the `day` value from the corresponding tuple in the `last7DaysNewStreamers` array, so I'll create another axis value formatter.
+This once again demonstrates just how configurable `Charts` is.
 
-I've already created an empty Swift class, so I'll open that up and import the `Charts` framework.
+**Catie**  
+You choose the position of the axis labels with just an enumeration value. How cool is that? 
 
+**Jessy**  
+If I were to build and run now, the bar chart would look great, but with one small exception—the `x` value I passed when creating instances of `BarChartDataEntry` is the index of the enumeration, so in this case a value between `0` and `6`. What I actually want to display on the x axis are the `day` values from the corresponding tuple in the `last7DaysNewStreamers` array, so I'll create another axis value formatter.
+
+## Demo
 > Open DayNameFormatter.swift
+
+I've already created an empty Swift class for this, so I'll open that up and start similarly to how I did with `LargeValueFormatter`. First, I import the `Charts` framework.
 
 ```
 import Charts
 ```
 
-I'll now update the class definition to declare the `IAxisValueFormatter` protocol conformance.
+And, update the class definition to declare the `IAxisValueFormatter` protocol conformance.
 
 ```
 class DayNameFormatter: NSObject, IAxisValueFormatter
 ```
 
-Next I'll add the required method that accepts a value and an optional instance of `AxisBase`, and returns a string.
+Next I add the same required method as before, totally ignoring the `AxisBase` parameter for this demo.
 
+```swift
+  func stringForValue(
+    _ value: Double,
+    axis _: AxisBase?
+  ) -> String {
+    <#code#>
+  }
 ```
-func stringForValue(_ value: Double, axis: AxisBase?) -> String {
 
-}
-```
-
-Remember the value being passed to this method is the value from the x axis, not the value being plotted. As the value in this case is the index of the array enumeration I can use it to locate the corresponding tuple in the array, and then return the `day` value.
+Remember the value being passed to this method is the value from the x axis, not the value being plotted. As the value in this case is the index of the positions of my data along the x axis, I can use it to locate the corresponding tuple in the array I'm plotting, and then return its `day` property.
 
 ```
 return Streamer.last7DaysNewStreamers[Int(value)].day
 ```
 
-Now I just need to jump back to the view controller and tell the x axis of the bar chart to use this class as its value formatter.
+Now I just need to jump back to the view controller and tell the x axis of the bar chart to use this class as its value formatter, then build and run.
 
-> Open DashboardViewController.swift and add the following to the top of `configureBarChart`
+> Open DashboardViewController.swift and add the following
 
-```
+```swift
 newStreamersBarChartView.xAxis.valueFormatter = DayNameFormatter()
 ```
 
@@ -482,10 +483,26 @@ newStreamersBarChartView.xAxis.valueFormatter = DayNameFormatter()
 
 ## Closing
 
-Alright, that's everything we'd like to cover in this screencast.
+**Catie**  
+There are the days. Very nice!
 
-At this point you should understand how to create `Charts` views within your storyboard, how to provide them with data to render using data entries and data sets, how to enable and disable various visual features, and how to provide custom value formatters for you charts' axis.
+**Jessy**  
+That's everything I'd like to cover in this screencast.
 
-There's a lot more to `Charts` than we've been able to demonstrate in this screencast, including 6 other chart types, various interaction features, multiple data sets, combined graphs, animation, and more. We highly recommend you check out the GitHub repo at [github.com/danielgindi/Charts](github.com/danielgindi/Charts) for more information as we really have just scratched the surface. 
+At this point you should understand how to create `Charts` views within your storyboard, how to provide them with data to render using data entries and data sets, how to enable and disable various visual features, and how to provide custom value formatters for you charts' axes.
 
-Thanks for watching—and we look forward to seeing all the beautiful and informative charts you guys start displaying in your apps. We're out!
+**Catie**  
+There's a lot more to `Charts` than we've been able to demonstrate in this screencast, including 6 other chart types, various interaction features, multiple data sets, combined graphs, animation, and more. 
+
+**Jessy**  
+We highly recommend you check out the GitHub repo , here,
+>point  
+[github.com/danielgindi/Charts](github.com/danielgindi/Charts) 
+
+for more information as we really have just scratched the surface. 
+
+**Catie**  
+Thanks for watching—and we look forward to seeing all the beautiful and informative charts you all start displaying in your apps. 
+
+**Jessy**  
+We're out!

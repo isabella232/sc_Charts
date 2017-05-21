@@ -69,6 +69,30 @@ final class DashboardViewController: UIViewController {
     }
   }
   
+  @IBOutlet var newStreamersBarChartView: BarChartView! {
+    didSet {
+      newStreamersBarChartView.configureDefaults()
+      newStreamersBarChartView.xAxis.labelPosition = .bottom
+      newStreamersBarChartView.xAxis.labelTextColor = .white
+      newStreamersBarChartView.xAxis.valueFormatter = DayNameFormatter()
+      newStreamersBarChartView.data = {
+        let dataSet = BarChartDataSet(
+          values:
+          Streamer.last7DaysNewStreamers
+            .enumerated()
+            .map{index, newStreamers in BarChartDataEntry(
+              x: Double(index),
+              y: newStreamers.count
+            )},
+          label: nil
+        )
+        dataSet.drawValuesEnabled = false
+        dataSet.colors = [.white]
+        return BarChartData(dataSets: [dataSet])
+      }()
+    }
+  }
+  
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }

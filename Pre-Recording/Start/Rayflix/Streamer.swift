@@ -30,7 +30,6 @@
 
 import Foundation
 
-
 enum Streamer {
   typealias DailyEntry = (day: String, count: Double)
   
