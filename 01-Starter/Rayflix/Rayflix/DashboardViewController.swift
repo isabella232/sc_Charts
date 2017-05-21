@@ -45,7 +45,9 @@ class DashboardViewController: UIViewController {
     let formatter = NumberFormatter()
     formatter.numberStyle = .decimal
     formatter.maximumFractionDigits = 0
-    totalStreamersLabel.text = formatter.string(from: NSNumber(value: Streamer.totalStreamers))
+    totalStreamersLabel.text = formatter.string(
+      from: NSNumber(value: Streamer.totalStreamers)
+    )
   }
 }
 

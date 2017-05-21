@@ -30,35 +30,32 @@
 
 import Foundation
 
-typealias StreamerDailyEntry = (day: String, count: Double)
 
-class Streamer {
+enum Streamer {
+  typealias DailyEntry = (day: String, count: Double)
   
   private static let newStreamerValues = [70.0, 110.0, 96.0, 64.0, 81.0, 89.0, 77.0]
   private static let baseValue = 100000.0
   private static let totalValues = [887.0, 930.0, 1131.0, 5930.0, 11181.0, 2171.0, 6123.0, 3145.0, 2771.0, 1171.0, 2019.0, 1101.0, 2881.0, 1743.0]
   
-  class var totalStreamers: Double {
+  static var totalStreamers: Double {
     get {
       return totalValues.reduce(baseValue, +)
     }
   }
   
-  class var last7DaysNewStreamers: [StreamerDailyEntry] {
-    get {
-      var streamers = [StreamerDailyEntry]()
-      let formatter = DateFormatter()
-      formatter.dateFormat = "EEE"
-      for i in stride(from: 7, through: 1, by: -1) {
-        streamers.append((day: formatter.string(from: Calendar.current.date(byAdding: .day, value: -i, to: Date())!).uppercased(), count: newStreamerValues[i - 1]))
-      }
-      return streamers
-    }
+  static var last7DaysNewStreamers: [DailyEntry] {
+    return Array(
+      zip(
+        DateFormatter().shortWeekdaySymbols.map{$0.uppercased()},
+        newStreamerValues.reversed()
+      )
+    )
   }
   
-  class var aggregateTotalStreamers: [Double] {
-    return totalValues.reduce([baseValue], { aggregate, value in
-      return aggregate + [aggregate.last! + value]
-    })
+  static var aggregateTotalStreamers: [Double] {
+    return totalValues.reduce([baseValue]){
+      aggregate, value in aggregate + [aggregate.last! + value]
+    }
   }
 }
