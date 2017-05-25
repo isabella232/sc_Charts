@@ -53,7 +53,12 @@ final class DashboardViewController: UIViewController {
           values:
             Streamer.aggregateTotalStreamers
             .enumerated()
-            .map{index, total in ChartDataEntry(x: Double(index), y: total)},
+            .map{
+              index, total in LineChartDataEntry(
+                x: Double(index),
+                y: total
+              )
+            },
           label: nil
         )
         dataSet.colors = [.white]
@@ -78,12 +83,14 @@ final class DashboardViewController: UIViewController {
       newStreamersBarChartView.data = {
         let dataSet = BarChartDataSet(
           values:
-          Streamer.last7DaysNewStreamers
+            Streamer.last7DaysNewStreamers
             .enumerated()
-            .map{index, newStreamers in BarChartDataEntry(
-              x: Double(index),
-              y: newStreamers.count
-            )},
+            .map{
+              dayIndex, newStreamers in BarChartDataEntry(
+                x: Double(dayIndex),
+                y: newStreamers.count
+              )
+            },
           label: nil
         )
         dataSet.drawValuesEnabled = false
