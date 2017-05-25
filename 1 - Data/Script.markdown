@@ -30,7 +30,7 @@ I've gone ahead and installed `Charts` using Cocoapods, and will therefore be wo
 
 > Open Rayflix.xcworkspace, and then open Main.storyboard
 
-As you can see I've already got my view controller laid out, including two views, one for each of the charts I'll add. I'm going to render a line chart in the upper view, and a bar chart in the lower view.
+As you can see I've already got my view controller laid out, including two views: one for each of the charts I'll add. I'm going to render a line chart in the upper view, and a bar chart in the lower view.
 
 The first thing I need to do is set the custom class for the upper view. To do that, I select the **Total Streamers Chart** from the Document Outline, and then in the **Identity Inspector** set **Class** to `LineChartView` from the **Charts** module.
 
@@ -68,7 +68,7 @@ In order to work effectively with the `Charts` framework, you need to understand
 How's the documentation?
 
 **Jessy**    
-It provides really good coverage, I won't go too deep into in this screencast. The main things to remember are that a chart requires data, data is made up from one or more data sets, and a data set is a collection of data entries, which in turn represent the x and y values of a plot on a chart. 
+It provides really good coverage, I won't go too deep into it in this screencast. The main things to remember are that a chart requires data, data is made up from one or more data sets, and a data set is a collection of data entries, which in turn represent the x and y values of a plot on a chart. 
 
 **Catie**  
 Sounds simple enough!
@@ -77,7 +77,7 @@ Sounds simple enough!
 
 > Open DashboardViewController.swift
 
-To keep things tidy, I'm going to configure `totalStreamersLineChartView` in its `didSet` observer, which is called when it's assigned the value you connected in Interface Builder. I'll use a closure to assign its data property. To start off with, I'll return nil, to avoid having errors as I put the data together.
+To keep things tidy, I'm going to configure `totalStreamersLineChartView` in its `didSet` observer, which is called just before `viewDidLoad`, when it's assigned the value you connected in Interface Builder. I'll use a closure to assign its data property. To start off with, I'll return nil, to avoid having errors as I put the data together.
 
 ```swift
   @IBOutlet var totalStreamersLineChartView: LineChartView! {
@@ -96,7 +96,7 @@ To create the data entries I'll use a static property on the `Streamer` model ty
 	Streamer.aggregateTotalStreamers
 ```
 
-I'll use the `enumerated` method, as I need both the indices _and_ values of that array, as I pipe them into `map`, creating instances of `ChartDataEntry`. The indices are the `x` values, but they needed to be converted to `Double`s first. The streamer counts are already `Double`s so they can be used as the `y` values directly.
+I'll use the `enumerated` method, as I need both the indices _and_ values of that array, as I pipe them into `map`, creating instances of `ChartDataEntry`. The indices are the `x` values, but they need to be converted to `Double`s first. The streamer counts are already `Double`s so they can be used as the `y` values directly.
 
 ```swift
         let entries =
@@ -231,7 +231,7 @@ totalStreamersLineChartView.configureDefaults()
 > show onscreen again
 
 **Catie**  
-The chart would look far better if those ghastly circles were removed, a solid color was drawn under the curve, and if the chart values were hidden. How can you configure how the data itself is rendered?
+The chart would look far better if those ghastly circles were removed, a solid color was drawn under the curve, and if the chart values were hidden. How do you configure how the data itself is rendered?
 
 **Jessy**  
 As you've already seen the `Charts` framework is highly configurable, so after a quick read through the documentation I was able to find the necessary methods and properties to achieve exactly the look you're talking about!
@@ -256,7 +256,7 @@ Disabling those ghastly circles is easy enough.
 dataSet.drawCirclesEnabled = false
 ```
 
-In order to render the chart with a fill, instead of as a thin line, I need to tell the data set that to draw that fill, and provide a color and an alpha value for it.
+In order to render the chart with a fill, instead of as a thin line, I need to tell the data set to draw that fill, and provide a color and an alpha value for it.
 
 ```
 dataSet.drawFilledEnabled = true
@@ -285,7 +285,10 @@ Here's what happens if I build and run now!
 > show that in the middle of the screen
 
 **Catie**  
-The looks much better! But something needs to be done about the formatting of the y axis values.
+That looks much better! But something needs to be done about the formatting of the y axis values.
+
+---
+# Part 2
 
 **Jessy**  
 When a chart is rendered, the `Charts` framework will attempt to determine what values are shown on each visible axis based on the data it's plotting. However, these values will always be numeric because you can only provide instances of `Double` as the `x` and `y` values.
