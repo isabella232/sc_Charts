@@ -5,21 +5,16 @@ Hey, what's up everybody, this is Jessy. In today's screencast I'm going to intr
 
 **Catie**  
 > look at camera
-I'm Catie, and this time around, I'll be learning along with you!
+
+I'm Catie, and this time around, I'll be learning along with you! What is Charts?
 
 **Jessy** 
-As the name might imply, `Charts` is an open source charting framework, written in Swift by Daniel Cohen Gindi. It's heavily inspired by the `MPAndroidCharts` library for Android, and as such shares an almost identical API. This is great if you're working cross-platform, since the learning curve is reduced and productivity increased.
+As the name might imply, `Charts` is an open source charting framework, written in Swift by Daniel Cohen Gindi. It's heavily inspired by the `MPAndroidCharts` library for Android, and as such shares an almost identical API, which is great if you're working cross-platform.
 
 The framework provides 8 different chart types out-of-the-box, has full support for pinching and panning, is highly configurable, and even provides build-up animations for both axes. 
 
 **Catie** 
-We'd both like to give a big thanks to Mic Pringle for putting together the materials we'll be using in this screencast.
-
-**Jessy**  
-The easiest—and most enjoyable!—way to understand `Charts` is to begin using it!
-
-**Catie**  
-So let’s dive in!
+We'd both like to give a big thanks to Mic Pringle for putting together the materials we'll be using in this screencast. Let’s dive in!
 
 ## Demo
 
