@@ -134,7 +134,7 @@ That looks _much_ better! But something needs to be done about the formatting of
 **Catie**  
 When a chart is rendered, the `Charts` framework will attempt to determine what values are shown on each visible axis based on the data it's plotting. However, these values will always be numeric because you can only provide instances of `Double` as the `x` and `y` values.
 
-To workaround this limitation, `Charts` provides the concept of an axis value formatter, by way of the `IAxisValueFormatter` protocol. 
+To work around this limitation, `Charts` provides the concept of an axis value formatter, by way of the `IAxisValueFormatter` protocol. 
 
 **Jessy**  
 "I" as a prefix for "interface": not very Swifty! As I mentioned last time, the `Charts` framework is actually a port of the popular Android charting library `MPAndroidChart`, and you will occasionally come across stray Java-isms, such as this.
@@ -215,7 +215,7 @@ dataSet.drawValuesEnabled = false
 dataSet.colors = [.white]
 ```
 
-Now I'll configure two more properties specific to the bar chart—I want the x axis to appear under the graph rather than above it, and I want the labels on that axis to be white so they're legible against the green background.
+Now I'll configure two more properties specific to the bar chart—I want the x axis labels to appear under the graph rather than above it, and I want the labels on that axis to be white so they're legible against the green background.
 
 ```swift
 newStreamersBarChartView.xAxis.labelPosition = .bottom
@@ -231,7 +231,7 @@ You choose the position of the axis labels with just an enumeration value. `Char
 The bar chart would look great, if not for those `0` to `6` indices along the x axis.
 
 **Jessy**  
-Last time, I introduced the `last7DaysNewStreamers` array, which includes provides corresponding day names in an array. Surely I can use that, with another axis value formatter…
+Last time, I introduced the `last7DaysNewStreamers` array, which provides corresponding day names in an array. Surely I can use that, with another axis value formatter…
 
 ## Demo
 > Open DayNameFormatter.swift
@@ -270,4 +270,7 @@ There's a lot more to `Charts` than we've been able to demonstrate in this scree
 We've really just scratched the surface. And we look forward to seeing all the beautiful and informative charts you all start displaying in your apps. 
 
 **Jessy**  
-Might I suggest going with …Chart-reuse?
+Might I suggest using …Chart-reuse?
+
+**Catie**  
+No. You might not.
