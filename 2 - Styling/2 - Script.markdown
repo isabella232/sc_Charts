@@ -1,8 +1,18 @@
-**Catie**  
-At this point the line chart is accurately rendering the Rayflix streamers data, but its appearance leaves much to be desired—the mundane coloring, the cramped numbers, and what's with all those grid lines? 
+## Introduction
 
 **Jessy**  
-I'm not sure whether or not this is a holdover from the framework's roots in Android, but the developers have decided to enable _every_ visual feature by default. Luckily they've also made all those features configurable. 
+Hey everybody, I'm Jessy. In a previous screencast, I introduced you and Catie to the `Charts` framework. 
+
+**Catie**  
+This time, I'm going to show you how to format your charts, and add style.
+
+**Jessy** 
+Once again, many thanks to Mic Pringle for the supporting materials for this screencast. What state is that project in at this point?
+
+**Catie**  
+There's a line chart, and bar chart, accurately rendering the Rayflix streamers data, but its appearance leaves much to be desired—the mundane coloring, the cramped numbers, and what's with all those grid lines? 
+
+For whatever reason, _every_ visual feature is enabled by default. Luckily the developers have made all those features configurable. 
 
 ## Demo
 
@@ -30,6 +40,8 @@ isUserInteractionEnabled = false
 Next I want to disable some of the superfluous grid lines the chart renders by default, so it will more closely align with the overall aesthetics of the Rayflix app. I'll apply the same changes to the horizontal "`xAxis`", and the vertical "`leftAxis`"…
 
 ```  
+isUserInteractionEnabled = false
+
     for axis in [xAxis, leftAxis] {
       axis.drawAxisLineEnabled = false
       axis.drawGridLinesEnabled = false
@@ -48,11 +60,11 @@ And as I don't want either chart to display a second Y axis on the right, I'll j
 rightAxis.enabled = false
 ```
 
-**Catie**  
-And now you add a call to this `configureDefaults` method in the didSet observer for `totalStreamersLineChartView`. 
-
 **Jessy**  
-Right!
+Last time, we set up the data for the charts in their `didSet` observers. Should we put the call to `configureDefaults` there as well? 
+
+**Catie**  
+Yes. I'll just do it for the line chart to start with, so we can see how much of a difference it makes. 
 
 ```swift
     didSet {
@@ -60,7 +72,7 @@ Right!
       totalStreamersLineChartView.data = {
 ```
 
-Also, unlike the bar chart I'll be setting up next, I want to disable the line chart x axis labels. I'll do that here too.
+Also, unlike the bar chart, I want to disable the line chart's x axis labels.
 
 ```swift
 totalStreamersLineChartView.configureDefaults()
@@ -72,17 +84,15 @@ totalStreamersLineChartView.configureDefaults()
 
 > show onscreen again
 
-**Catie**  
-The chart would look far better if those ghastly circles were removed, a solid color was drawn under the curve, and if the chart values were hidden. How do you configure how the data itself is rendered?
-
 **Jessy**  
-As you've already seen the `Charts` framework is highly configurable, so after a quick read through the documentation I was able to find the necessary methods and properties to achieve exactly the look you're talking about!
+That looks cleaner! But it would look far better if those ghastly circles were removed, a solid color was drawn under the curve, and if the chart values were hidden. How do you configure how the data itself is rendered?
+
+**Catie**  
+I wondered that myself. After a quick read through the documentation, I was able to find the necessary methods and properties to achieve exactly the look you're talking about!
 
 It turns out that you use `LineChartDataSet` to configure the appearance of the data, which in hindsight makes perfect sense. 
 
 ## Demo
-
-Now I'll add the configuration to the `LineChartDataSet` I created.
 
 To set the color of the line I use a `UIColor` array.
 
@@ -116,35 +126,24 @@ return data
 
 ## Interlude
 
-**Catie**  
-Hang on, that doesn't look like Swift.
-
-**Jessy**   
-But perhaps suspiciously …like a Java setter method!? As I mentioned earlier the `Charts` framework is actually a port of the popular Android charting library `MPAndroidChart`, and you will occasionally come across a stray Java-like method such as this one. But rest assured that the developers are working hard to make the entire framework as Swift-y as possible while still maintaining its roots.
-
-Here's what happens if I build and run now!
-
-> show that in the middle of the screen
-
-**Catie**  
-That looks much better! But something needs to be done about the formatting of the y axis values.
-
----
-# Part 2
+> Build & Run; show that in the middle of the screen.
 
 **Jessy**  
+That looks _much_ better! But something needs to be done about the formatting of the y axis values.
+
+**Catie**  
 When a chart is rendered, the `Charts` framework will attempt to determine what values are shown on each visible axis based on the data it's plotting. However, these values will always be numeric because you can only provide instances of `Double` as the `x` and `y` values.
 
 To workaround this limitation, `Charts` provides the concept of an axis value formatter, by way of the `IAxisValueFormatter` protocol. 
 
-**Catie**  
-"I" as a prefix for interface? Again, not very Swifty!
-> shakes head
-
 **Jessy**  
-But it gets the job done! When a chart is about to be rendered it will call through to any provided axis value formatters, passing the numeric value, and rendering the returned string in its place.
+"I" as a prefix for "interface": not very Swifty! As I mentioned last time, the `Charts` framework is actually a port of the popular Android charting library `MPAndroidChart`, and you will occasionally come across stray Java-isms, such as this.
 
-This mechanism can be used to convert a set of numbers between 1 and 7 into days of the week, for example.
+**Catie**  
+Regardless, it gets the job done!
+When a chart is about to be rendered, it will call through to any provided axis value formatters, passing the numeric value, and rendering a returned string in its place.
+
+For example, we'll be using this mechanism to convert a set of numbers between 1 and 7 into days of the week.
 
 ## Demo
 
@@ -164,7 +163,7 @@ And then I'll declare that `LargeValueFormatter` conforms to `IAxisValueFormatte
 class LargeValueFormatter: NSObject, IAxisValueFormatter
 ```
 
-That protocol requires a single method that receives a value and an optional instance of `AxisBase`, and returns a string. For the purposes of this screencast I'm really only interested in the value; I'll make that clear by using an underscore for the internal parameter label. 
+The protocol requires a single method that receives a value and an optional instance of `AxisBase`, and returns a string. For the purposes of this screencast I'm really only interested in the value; I'll make that clear by using an underscore for the internal parameter label. 
 
 ```swift
 func stringForValue(
@@ -175,7 +174,7 @@ func stringForValue(
 }
 ```
 
-The values that are passed to this method aren't from my data; rather, they're the values that display along the axis the formatter is attached to. For this vertical axis, I simply want to format the numbers so they're prettier and easier to read in such a confined space. For that, I initialize a `String` with a scaled value, formatted with truncation at the decimal point.
+Now the values that are passed to this method aren't from my data; rather, they're the values that display along the axis the formatter is attached to. For this vertical axis, I simply want to format the numbers so they're prettier and easier to read in such a confined space. For that, I initialize a `String` with a scaled value, formatted with truncation at the decimal point.
 
 ```swift
    return String(
@@ -184,7 +183,7 @@ The values that are passed to this method aren't from my data; rather, they're t
     )
 ```
 
-Now I tell the left Y axis of my line chart to use this formatter.
+Now I tell the left Y axis of my line chart to use an instance of this formatter.
 
 ```swift
 totalStreamersLineChartView.leftAxis.valueFormatter = LargeValueFormatter()
@@ -194,21 +193,27 @@ totalStreamersLineChartView.leftAxis.valueFormatter = LargeValueFormatter()
 
 
 ## Interlude
-As you'll see, I'm able to reuse a lot of what I've already implemented for the line chart, a testament to the great work done on the API by the developers of `Charts` and `MPAndroidChart`.
+**Jessy**  
+The values are legible. I think the line chart looks good. Onto the bar chart?
+
+**Catie**  
+Sure! As you'll see, I'll be able to reuse a lot of what I've already implemented for the line chart, a testament to the great work done on the API by the developers of `Charts` and `MPAndroidChart`.
 
 ## Demo
 
-I'll follow the same routine as I did with the line chart, beginning by configuring `newStreamersBarChartView`'s defaults, 
+I'll begin by configuring `newStreamersBarChartView`'s defaults.
 
+```swift
+newStreamersBarChartView.configureDefaults()
+```
 
-Just as with the line chart I want the values hidden and the color of the bars to be white. Both charts will share the same design language.
+Just as with the line chart, I want the values hidden and the color of the bars to be white. Both charts will share the same design language.
 
 ```swift
 let dataSet = BarChartDataSet(values: entries, label: nil)
 dataSet.drawValuesEnabled = false
 dataSet.colors = [.white]
 ```
-
 
 Now I'll configure two more properties specific to the bar chart—I want the x axis to appear under the graph rather than above it, and I want the labels on that axis to be white so they're legible against the green background.
 
@@ -219,47 +224,26 @@ newStreamersBarChartView.xAxis.labelTextColor = .white
 
 ## Interlude
 
-This once again demonstrates just how configurable `Charts` is.
+**Jessy**  
+You choose the position of the axis labels with just an enumeration value. `Charts` offers some really cool configuration options.
 
 **Catie**  
-You choose the position of the axis labels with just an enumeration value. How cool is that? 
+The bar chart would look great, if not for those `0` to `6` indices along the x axis.
 
 **Jessy**  
-If I were to build and run now, the bar chart would look great, but with one small exception—the `x` value I passed when creating instances of `BarChartDataEntry` is the index of the enumeration, so in this case a value between `0` and `6`. What I actually want to display on the x axis are the `day` values from the corresponding tuple in the `last7DaysNewStreamers` array, so I'll create another axis value formatter.
+Last time, I introduced the `last7DaysNewStreamers` array, which includes provides corresponding day names in an array. Surely I can use that, with another axis value formatter…
 
 ## Demo
 > Open DayNameFormatter.swift
 
-I've already created an empty Swift class for this, so I'll open that up and start similarly to how I did with `LargeValueFormatter`. First, I import the `Charts` framework.
+I'll work in this `DayNameFormatter` class, which is set up just like `LargeValueFormatter`. The `Charts` framework is imported, the class definition declares conformance to the `IAxisValueFormatter` protocol, and its method requirement is stubbed out, returning an empty String.
 
-```
-import Charts
-```
-
-And, update the class definition to declare the `IAxisValueFormatter` protocol conformance.
-
-```
-class DayNameFormatter: NSObject, IAxisValueFormatter
-```
-
-Next I add the same required method as before, totally ignoring the `AxisBase` parameter for this demo.
-
-```swift
-  func stringForValue(
-    _ value: Double,
-    axis _: AxisBase?
-  ) -> String {
-    <#code#>
-  }
-```
-
-Remember the value being passed to this method is the value from the x axis, not the value being plotted. As the value in this case is the index of the positions of my data along the x axis, I can use it to locate the corresponding tuple in the array I'm plotting, and then return its `day` property.
+The `value` being passed to this method is one of those day indices from the x axis. I can use it to locate the corresponding tuple in the array I'm plotting, and then return its `day` property.
 
 ```
 return Streamer.last7DaysNewStreamers[Int(value)].day
 ```
-
-Now I just need to jump back to the view controller and tell the x axis of the bar chart to use this class as its value formatter, then build and run.
+Now I just need to jump back to the view controller and tell the x axis of the bar chart to use this class as its value formatter, then build and run?
 
 > Open DashboardViewController.swift and add the following
 
@@ -272,28 +256,18 @@ newStreamersBarChartView.xAxis.valueFormatter = DayNameFormatter()
 ## Closing
 
 **Catie**  
-There are the days. Very nice!
+That's it. There are the days. Very nice! 
+
+And that's everything I'd like to cover in this screencast. Now you know how to enable and disable various visual features of your charts, and how to provide custom value formatters for their axes.
 
 **Jessy**  
-That's everything I'd like to cover in this screencast.
+There's a lot more to `Charts` than we've been able to demonstrate in this screencast, including 6 other chart types, various interaction features, multiple data sets, combined graphs, animation, and more.
 
-how to enable and disable various visual features, and how to provide custom value formatters for you charts' axes.
-
-**Catie**  
-There's a lot more to `Charts` than we've been able to demonstrate in this screencast, including 6 other chart types, various interaction features, multiple data sets, combined graphs, animation, and more. 
-
-**Jessy**  
-We highly recommend you check out the GitHub repo , here,
 >point  
 [github.com/danielgindi/Charts](github.com/danielgindi/Charts) 
 
-for more information as we really have just scratched the surface. 
-
 **Catie**  
-Thanks for watching—and we look forward to seeing all the beautiful and informative charts you all start displaying in your apps. 
+We've really just scratched the surface. And we look forward to seeing all the beautiful and informative charts you all start displaying in your apps. 
 
 **Jessy**  
 Might I suggest going with …Chart-reuse?
-
-**Catie**  
-We're out!

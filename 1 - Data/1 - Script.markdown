@@ -157,13 +157,11 @@ Now I can build and run, with a line charted!
 ## Interlude
 > Put chart in middle of on-camera screen
 
-## Interlude
-
 **Catie**  
-It seems to be working great, but not really looking so great.
+It seems to be _working_ great, but not really _looking_ so great.
 
 **Jessy**  
-While I don't disagree in the slightest, that is a topic for _another_ screencast. At this point, why don't you have a go ahead at implementing the bar chart? It's a very similar process.
+While I don't disagree in the slightest, that is a topic for _another_ screencast. At this point, why don't _you_ have a go at implementing the bar chart? It's a very similar process.
 
 ## Demo
 

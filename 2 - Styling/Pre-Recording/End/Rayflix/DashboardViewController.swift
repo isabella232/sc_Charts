@@ -28,11 +28,12 @@
  * THE SOFTWARE.
  */
 
+
 import Charts
 import UIKit
 
 final class DashboardViewController: UIViewController {
-  @IBOutlet weak var totalStreamersLabel: UILabel! {
+  @IBOutlet var totalStreamersLabel: UILabel! {
     didSet {
       let formatter = NumberFormatter()
       formatter.numberStyle = .decimal
@@ -54,7 +55,7 @@ final class DashboardViewController: UIViewController {
             Streamer.aggregateTotalStreamers
             .enumerated()
             .map{
-              index, total in LineChartDataEntry(
+              index, total in ChartDataEntry(
                 x: Double(index),
                 y: total
               )
@@ -63,9 +64,9 @@ final class DashboardViewController: UIViewController {
         )
         dataSet.colors = [.white]
         dataSet.drawCirclesEnabled = false
-        dataSet.fillAlpha = 1.0
         dataSet.drawFilledEnabled = true
         dataSet.fillColor = .white
+        dataSet.fillAlpha = 1.0
         
         let data = LineChartData(dataSets: [dataSet])
         data.setDrawValues(false)
@@ -90,7 +91,7 @@ final class DashboardViewController: UIViewController {
                 x: Double(dayIndex),
                 y: newStreamers.count
               )
-            },
+          },
           label: nil
         )
         dataSet.drawValuesEnabled = false

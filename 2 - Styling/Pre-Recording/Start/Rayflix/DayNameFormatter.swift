@@ -28,8 +28,14 @@
  * THE SOFTWARE.
  */
 
-import Foundation
 
-final class DayNameFormatter: NSObject {
-  
+import Charts
+
+final class DayNameFormatter: NSObject, IAxisValueFormatter {
+  func stringForValue(
+    _ value: Double,
+    axis _: AxisBase?
+  ) -> String {
+    return .init()
+  }
 }

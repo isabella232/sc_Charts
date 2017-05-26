@@ -30,7 +30,6 @@
 
 import Foundation
 
-
 enum Streamer {
   typealias DailyEntry = (day: String, count: Double)
   
@@ -39,9 +38,7 @@ enum Streamer {
   private static let totalValues = [887.0, 930.0, 1131.0, 5930.0, 11181.0, 2171.0, 6123.0, 3145.0, 2771.0, 1171.0, 2019.0, 1101.0, 2881.0, 1743.0]
   
   static var totalStreamers: Double {
-    get {
-      return totalValues.reduce(baseValue, +)
-    }
+    return totalValues.reduce(baseValue, +)
   }
   
   static var last7DaysNewStreamers: [DailyEntry] {
