@@ -94,7 +94,6 @@ To create the data entries I'll use a static property on the `Streamer` model ty
 I'll use the `enumerated` method, as I need both the indices _and_ values of that array, as I pipe them into `map`, creating instances of `ChartDataEntry`. The indices are the `x` values, but they need to be converted to `Double`s first. The streamer counts are already `Double`s so they can be used as the `y` values directly.
 
 ```swift
-        let entries =
           Streamer.aggregateTotalStreamers
           .enumerated()
           .map{
