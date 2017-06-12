@@ -28,95 +28,31 @@
  * THE SOFTWARE.
  */
 
+import Foundation
 
-import Charts
-import UIKit
-
-final class DashboardViewController: UIViewController {
-  @IBOutlet var totalStreamersLabel: UILabel! {
-    didSet {
-      let formatter = NumberFormatter()
-      formatter.numberStyle = .decimal
-      formatter.maximumFractionDigits = 0
-      totalStreamersLabel.text = formatter.string(
-        from: NSNumber(value: Streamer.totalStreamers)
+enum Streamer {
+  typealias DailyEntry = (day: String, count: Double)
+  
+  private static let newStreamerValues = [70.0, 110.0, 96.0, 64.0, 81.0, 89.0, 77.0]
+  private static let baseValue = 100000.0
+  private static let totalValues = [887.0, 930.0, 1131.0, 5930.0, 11181.0, 2171.0, 6123.0, 3145.0, 2771.0, 1171.0, 2019.0, 1101.0, 2881.0, 1743.0]
+  
+  static var totalStreamers: Double {
+    return totalValues.reduce(baseValue, +)
+  }
+  
+  static var last7DaysNewStreamers: [DailyEntry] {
+    return Array(
+      zip(
+        DateFormatter().shortWeekdaySymbols.map{$0.uppercased()},
+        newStreamerValues.reversed()
       )
-    }
+    )
   }
   
-  @IBOutlet var totalStreamersLineChartView: LineChartView! {
-    didSet {
-      totalStreamersLineChartView.data = {
-        let dataSet = LineChartDataSet(
-          values:
-            Streamer.aggregateTotalStreamers
-            .enumerated()
-            .map{
-              dayIndex, total in ChartDataEntry(
-                x: Double(dayIndex),
-                y: total
-              )
-            },
-          label: nil
-        )
-        
-        let data = LineChartData(dataSets: [dataSet])
-        return data
-      }()
+  static var aggregateTotalStreamers: [Double] {
+    return totalValues.reduce([baseValue]){
+      aggregate, value in aggregate + [aggregate.last! + value]
     }
-  }
-  
-  @IBOutlet var newStreamersBarChartView: BarChartView! {
-    didSet {
-      newStreamersBarChartView.data = {
-        let dataSet = BarChartDataSet(
-          values:
-            Streamer.last7DaysNewStreamers
-            .enumerated()
-            .map{
-              dayIndex, newStreamers in BarChartDataEntry(
-                x: Double(dayIndex),
-                y: newStreamers.count
-              )
-            },
-          label: nil
-        )
-        return BarChartData(dataSets: [dataSet])
-      }()
-    }
-  }
-  
-  override var preferredStatusBarStyle: UIStatusBarStyle {
-    return .lightContent
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -28,95 +28,33 @@
  * THE SOFTWARE.
  */
 
-
-import Charts
 import UIKit
 
-final class DashboardViewController: UIViewController {
-  @IBOutlet var totalStreamersLabel: UILabel! {
-    didSet {
-      let formatter = NumberFormatter()
-      formatter.numberStyle = .decimal
-      formatter.maximumFractionDigits = 0
-      totalStreamersLabel.text = formatter.string(
-        from: NSNumber(value: Streamer.totalStreamers)
-      )
-    }
+@IBDesignable
+class GradientView: UIView {
+  
+  public override init(frame: CGRect) {
+    super.init(frame: frame)
+    setUp()
   }
   
-  @IBOutlet var totalStreamersLineChartView: LineChartView! {
-    didSet {
-      totalStreamersLineChartView.data = {
-        let dataSet = LineChartDataSet(
-          values:
-            Streamer.aggregateTotalStreamers
-            .enumerated()
-            .map{
-              dayIndex, total in ChartDataEntry(
-                x: Double(dayIndex),
-                y: total
-              )
-            },
-          label: nil
-        )
-        
-        let data = LineChartData(dataSets: [dataSet])
-        return data
-      }()
-    }
+  public required init?(coder decoder: NSCoder) {
+    super.init(coder: decoder)
+    setUp()
   }
   
-  @IBOutlet var newStreamersBarChartView: BarChartView! {
-    didSet {
-      newStreamersBarChartView.data = {
-        let dataSet = BarChartDataSet(
-          values:
-            Streamer.last7DaysNewStreamers
-            .enumerated()
-            .map{
-              dayIndex, newStreamers in BarChartDataEntry(
-                x: Double(dayIndex),
-                y: newStreamers.count
-              )
-            },
-          label: nil
-        )
-        return BarChartData(dataSets: [dataSet])
-      }()
-    }
+  override func prepareForInterfaceBuilder() {
+    super.prepareForInterfaceBuilder()
+    setUp()
   }
   
-  override var preferredStatusBarStyle: UIStatusBarStyle {
-    return .lightContent
+  private func setUp() {
+    let veryDarkGreen = #colorLiteral(red: 0, green: 0.2353821998, blue: 0.1582364977, alpha: 1)
+    let darkGreen = #colorLiteral(red: 0, green: 0.4078431373, blue: 0.2156862745, alpha: 1)
+    let gradientLayer = CAGradientLayer()
+    gradientLayer.frame = bounds
+    gradientLayer.colors = [veryDarkGreen.cgColor, darkGreen.cgColor]
+    gradientLayer.locations = [0.0, 1.0]
+    layer.insertSublayer(gradientLayer, at: 0)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
