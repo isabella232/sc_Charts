@@ -191,7 +191,6 @@
 				TargetAttributes = {
 					7B8ABA4F1EC9A4D20086CAC0 = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = KFCNEC27GU;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -409,7 +408,7 @@
 			baseConfigurationReference = 59362169E78582EE5C54FE40 /* Pods-Rayflix.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = KFCNEC27GU;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Rayflix/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.razeware.Rayflix;
@@ -423,7 +422,7 @@
 			baseConfigurationReference = A9D483816E82164F57BF4AFF /* Pods-Rayflix.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = KFCNEC27GU;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Rayflix/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.razeware.Rayflix;
